@@ -17,4 +17,5 @@ This program creates a session in the login db of mongo in the users collection 
 
 In the user creation route, any new user created overwrites the previous user. Thus, you have a persistent cookie-based save file and can reset the name you assign yourself.
 
+ISSUES:
 Some of the views have a mix of jade and native HTML and still need to be fixed. There are also some unused dependencies I was testing that I may use later. Instructions can be better as well.
