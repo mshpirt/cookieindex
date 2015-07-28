@@ -4,6 +4,7 @@ app that creates and stores express sessions with mongostore
 The routes for this app  are:
 
 1) Index (New Game) > Start > Newgame > Load > Game
+
 2) Index (Load Game) > Load > Game
 
 To run this app, install npm, node, express, and mongodb. 
