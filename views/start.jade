@@ -1,11 +1,12 @@
-h1 Welcome to SC2 Manager
-p Please enter a name.
+extends layout
 
-script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js")
+block content
+  h1 Welcome to SC2 Manager
+  p Please enter a name.
 
-p
- form(method='post', action='/newgame')
-  input(type='text',name='user')
-  input(type='submit', name='submit')
+  p
+    form(method='post', action='/newgame')
+      input(type='text',name='user')
+      input(type='submit', name='submit')
 
-p (WARNING: This will delete any current saved games!)
+  p (WARNING: This will delete any current saved games!)

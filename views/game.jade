@@ -1,7 +1,10 @@
-h1= title
-p Welcome to The #{title}
-p Welcome back, #{username}!
+extends layout
 
-<form action="/" method="GET">
-<button type="submit">Back to Main Menu</button>
-</form>
+block content
+  h1= title
+  p Welcome to The #{title}
+  p Welcome back, #{username}!
+
+  p
+    form(method='get', action='/')
+      input(type='submit', value='Back to Main Menu')

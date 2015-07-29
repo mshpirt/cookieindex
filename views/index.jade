@@ -1,13 +1,13 @@
-h1= title
-// p Welcome to #{title}
-p Main Menu
+extends layout
 
-<form action="/start" method="GET">
-<button type="submit">New Game</button>
-</form>
+block content
+  h1= title
+  p Main Menu
 
-<br>
+  p
+    form(method='get', action='/start')
+      input(type='submit', value='New Game')
 
-<form action="/load" method="GET">
-<button type="submit">Load Game</button>
-</form>
+  p
+    form(method='get', action='/load')
+      input(type='submit', value='Load Game')

@@ -1,15 +1,18 @@
+var express = require('express');
+var router = express.Router();
+
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 
 // load user information if their session cookie exists in db
-exports.load = function(req, res)
-	{
+router.get('/', function(req, res, next) 
+  {
 	checkCookie(req, res);
 	console.log("We're in the load route. Cookie: ", req.cookies.managersession);
 	sessionID = req.session.id;
 	console.log("Session ID: ", sessionID)
-	};
+	})
 
 function checkCookie(req, res)
 	{
@@ -54,7 +57,9 @@ function checkCookie(req, res)
 	};
 
 // shouldn't be called, redirect to index just in case
-exports.load_post_handler = function(req, res)
-	{
+router.post('/', function(req, res, next) 
+  {
 	res.render('/', { title: 'Index' });
-	}
+	})
+
+module.exports = router;

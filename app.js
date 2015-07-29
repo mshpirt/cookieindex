@@ -1,97 +1,92 @@
+var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 
-/**
- * Module dependencies.
- */
+var routes = require('./routes/index');
+var users = require('./routes/users');
+var start = require('./routes/start');
+var load = require('./routes/load');
+var newgame = require('./routes/newgame');
+var game = require('./routes/game');
 
 var express = require('express');
+var session = require('express-session');
+var MongoStore = require('connect-mongostore')(session);
 
-// define routes
-var routes = require('./routes')
-var start = require('./routes/start.js')
-var load = require('./routes/load.js')
-var newgame = require('./routes/newgame.js')
-var game = require('./routes/game.js');
+var app = express();
 
-// declare variables for relevant dependencies
-var cookieParser = require('cookie-parser')
-var session = require('express-session')
-var parseurl = require('parseurl')
-var MongoStore = require('connect-mongo')(express);
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
-var app = module.exports = express.createServer();
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var ObjectId = require('mongodb').ObjectID;
-
-// Configuration
-
-app.configure(function(){
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.cookieParser());
-  app.set('trust proxy', 1) // trust first proxy
-
-  // session cookies are stored in mongo through MongoStore
-  app.use(session
-    ({
-    secret: 'secret1',
-    resave: true,
-    saveUninitialized: true,
-    rolling: true,
-    store: new MongoStore({
-        url: 'mongodb://127.0.0.1:27017/login',
-        autoRemove: 'disabled',
-        collection: 'users',
-        w:1,
+app.use(session(
+  {
+  secret: 'secret1',
+  resave: true,
+  saveUninitialized: true,
+  rolling: true,
+  store: new MongoStore(
+    {
+    db: 'login',
+    host: '127.0.0.1',
+    port: '27017',
+    autoRemove: 'disabled',
+    collection: 'users',
+    w:1,
     }),
-    name: 'managersession',
-    // unset: 'destroy',
-    cookie: { maxAge: 2629746000 }
-    }));
+  name: 'managersession',
+  // unset: 'destroy',
+  cookie: { maxAge: 2629746000 }
+  }));
 
-  // allow use of session variables locally in views
-  app.use(function(req,res,next){
-    res.locals.session = req.session;
-    next();
+app.use('/', routes);
+app.use('/users', users);
+app.use('/start', start);
+app.use('/load', load);
+app.use('/newgame', newgame);
+app.use('/game', game);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
   });
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
 });
 
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
 
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
-
-// route templates. more detail in the relevant .js files
-
-// routes for index
-app.get('/', routes.index);
-app.post('/', routes.index_post_handler);
-
-// route for user creation
-app.get('/start', start.start);
-
-// routes for user loading, called from index and newgame routes
-app.get('/load', load.load);
-app.post('/load', load.load_post_handler);
-
-// routes for new game creation, called from start route
-app.get('/newgame', newgame.newgame);
-app.post('/newgame', newgame.newgame_post_handler);
-
-// routes for the actual game. called from load route
-app.get('/game', game.game);
-app.post('/game', game.game_post_handler);
-
-// port 3000 used for this app. localhost:3000 is index
-app.listen(3000, function(){
-  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-});
-
+module.exports = app;

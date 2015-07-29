@@ -1,15 +1,18 @@
+var express = require('express');
+var router = express.Router();
+
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 
-exports.newgame = function(req, res)
+router.get('/', function(req, res, next) 
   {
   // this page is not supposed to receive GET requests, so redirect to index 
   res.redirect('/');
-  }
+  })
 
 // this route is generated after completing the form in the start route
-exports.newgame_post_handler = function(req, res)
+router.post('/', function(req, res, next) 
   {
   console.log(req.body.user);
   name = req.body.user;
@@ -74,4 +77,6 @@ exports.newgame_post_handler = function(req, res)
     });
   // after user creation, re-use the load route to load the user into the game
   res.redirect('/load');
-  }
+  })
+
+module.exports = router;
